@@ -90,14 +90,14 @@ class Robot:
                     Position = MathUtils.randomPosition(detail["rectangle"], offset=31)
                     OperationUtils.clickPosition(self.win, Position)
                     self.scanResources(next.encode("utf8"))
-                    time.sleep(randint(1000, 1500) / 1000.0)
+                    time.sleep(randint(2000, 2500) / 1000.0)
                     continue
                 Position = MathUtils.randomPosition(detail["rectangle"], offset=31)
                 OperationUtils.clickPosition(self.win, Position)
                 if "end" in stage:
                     self.battleCount += 1
                     print time.strftime("%H:%M:%S", time.localtime()), (str(self.index) + "累计进行了" + str(self.battleCount) + "次战斗")
-                    if self.limit is not None and self.battleCount > self.limit:
+                    if self.limit is not None and self.battleCount >= self.limit:
                         duplicateStage = self.switchMode()
 
                     rate = 80
@@ -111,7 +111,10 @@ class Robot:
                     start = True
                 else:
                     start = False
-                time.sleep(randint(800, 1000) / 1000.0)
+                if "wait" in stage:
+                    time.sleep(randint(5000, 10000) / 1000.0)
+                else:
+                    time.sleep(randint(800, 1000) / 1000.0)
             else:
                 # print(str(win) + "无匹配(战斗中)，等待……")
                 if start:
