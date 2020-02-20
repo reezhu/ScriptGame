@@ -118,7 +118,7 @@ class Robot:
             else:
                 # print(str(win) + "无匹配(战斗中)，等待……")
                 if start:
-                    time.sleep(randint(5, 10))
+                    time.sleep(randint(3, 5))
                     start = False
                 else:
                     time.sleep(randint(800, 1000) / 1000.0)
