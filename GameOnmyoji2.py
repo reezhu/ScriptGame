@@ -121,7 +121,7 @@ class Robot:
                     time.sleep(randint(3, 5))
                     start = False
                 else:
-                    time.sleep(randint(800, 1000) / 1000.0)
+                    time.sleep(randint(800, 1000) / 1000.0*3)
 
 
 if __name__ == '__main__':
