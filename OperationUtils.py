@@ -1,17 +1,25 @@
 # -*- coding: UTF-8 -*-
 # @Author  : Ree
 # @Email   : zhuweiyuan@corp.netease.com
+import os
 import time
 
 import aircv
 import cv2
 import numpy
+import psutil
 import win32api
 import win32con
 import win32gui
 import win32ui
 
 import MathUtils
+
+
+def setLowPriority():
+    p = psutil.Process(os.getpid())
+    print p.nice()
+    p.nice(psutil.BELOW_NORMAL_PRIORITY_CLASS)
 
 
 def getWindowCVimg(win):
@@ -82,19 +90,7 @@ def clickImage(win, path, threshold=0.9, imsrc=None):
         # saveImage(imsrc, [result['rectangle']])
         position = MathUtils.randomPosition(result['rectangle'])
         sendClick(win, position, win32con.WM_LBUTTONDOWN)
-        sendClick(win, position, win32con.WM_LBUTTONUP, button=0)
-        # clickPosition(win,position)
-
-
-def clickImage2(win, path, threshold=0.9, imsrc=None):
-    if imsrc is None:
-        imsrc = getWindowCVimg(win)
-    edit = cv2.imread(path)
-    result = aircv.find_template(imsrc, edit, threshold=threshold)
-    if result:
-
-        position = MathUtils.randomPosition(result['rectangle'])
-        sendClick(win, position, win32con.WM_LBUTTONDOWN)
+        time.sleep(0.01)
         sendClick(win, position, win32con.WM_LBUTTONUP, button=0)
         # clickPosition(win,position)
 
@@ -213,7 +209,7 @@ def locatStage(RESOURCES, hWnd=None, imsrc=None, threshold=0.9):
     # draw_rec(imsrc, [((0,0), (0,0), (0,0), (0,0))])
     for image in RESOURCES:
 
-        result = aircv.find_template(imsrc, cv2.imread(image.encode("gbk")),threshold=threshold)
+        result = aircv.find_template(imsrc, cv2.imread(image.encode("gbk")), threshold=(0.99 if ("++" in image) else threshold))
         if result:
             # draw_rec(imsrc, [result['rectangle']])
             return True, image, result

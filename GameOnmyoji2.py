@@ -4,6 +4,8 @@ import thread
 import time
 import traceback
 
+from psutil import Process
+
 import MathUtils
 import OperationUtils
 
@@ -65,6 +67,7 @@ class Robot:
         return duplicateStage
 
     def run(self):
+
         OperationUtils.resizeWin(self.win, 1152, 679)
         start = False
         lastStage = None
@@ -121,7 +124,7 @@ class Robot:
                     time.sleep(randint(3, 5))
                     start = False
                 else:
-                    time.sleep(randint(800, 1000) / 1000.0*3)
+                    time.sleep(randint(800, 1000) / 1000.0)
 
 
 if __name__ == '__main__':
@@ -134,6 +137,7 @@ if __name__ == '__main__':
         raise RuntimeError('window not found')
     # scanModes()
     index = 0
+    OperationUtils.setLowPriority()
     for win in wins:
         try:
             instance = Robot(win, index)
