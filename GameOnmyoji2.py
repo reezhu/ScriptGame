@@ -103,7 +103,7 @@ class Robot:
                     if self.limit is not None and self.battleCount >= self.limit:
                         duplicateStage = self.switchMode()
 
-                    rate = 80
+                    rate = 100
                     while randint(0, 100) < rate:
                         rate /= 2
                         print time.strftime("%H:%M:%S", time.localtime()), (str(self.index) + "随机点击")
