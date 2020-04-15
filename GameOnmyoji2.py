@@ -4,8 +4,6 @@ import thread
 import time
 import traceback
 
-from psutil import Process
-
 import MathUtils
 import OperationUtils
 
@@ -108,6 +106,7 @@ class Robot:
                         rate /= 2
                         print time.strftime("%H:%M:%S", time.localtime()), (str(self.index) + "随机点击")
                         time.sleep(randint(100, 500) / 1000.0)
+
                         Position = MathUtils.randomPosition(detail["rectangle"], offset=31)
                         OperationUtils.clickPosition(self.win, Position)
                 if "start" in stage:
