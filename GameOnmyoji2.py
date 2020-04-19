@@ -20,6 +20,8 @@ class Robot:
         self.battleCount = 0
         self.exit = None
         self.limit = None
+        self.duplicateStage = 0
+        self.duplicate = 20
         self.modes = []
 
     def scanModes(self):
@@ -49,6 +51,8 @@ class Robot:
                 self.exit = f.split('.')[1]
             elif "limit" in f:
                 self.limit = int(f.split('.')[1])
+            elif "duplicate" in f:
+                self.duplicate = int(f.split('.')[1])
             elif ".d" not in f:
                 self.RESOURCES.append(('./mode/' + folder + "/" + f).decode("gbk"))
         self.RESOURCES.sort()
@@ -69,7 +73,7 @@ class Robot:
         OperationUtils.resizeWin(self.win, 1152, 679)
         start = False
         lastStage = None
-        duplicateStage = 0
+        self.duplicateStage = 0
         while True:
             imsrc = OperationUtils.getWindowCVimg(self.win)
             result, stage, detail = OperationUtils.locatStage(self.RESOURCES, hWnd=self.win, imsrc=imsrc, threshold=THREADHOLD)
@@ -77,13 +81,13 @@ class Robot:
                 print time.strftime("%H:%M:%S", time.localtime()), self.index, stage
                 if lastStage is not stage:
                     lastStage = stage
-                    duplicateStage = 0
+                    self.duplicateStage = 0
                 else:
-                    duplicateStage += 1
-                    if duplicateStage % 10 == 0:
-                        print time.strftime("%H:%M:%S", time.localtime()), "重复点击", self.index, duplicateStage
-                    if duplicateStage > 20:
-                        duplicateStage = self.switchMode()
+                    self.duplicateStage += 1
+                    if self.duplicateStage % 10 == 0:
+                        print time.strftime("%H:%M:%S", time.localtime()), "重复点击", self.index, self.duplicateStage
+                    if self.duplicateStage > self.duplicate:
+                        self.duplicateStage = self.switchMode()
                 if "@" in stage:
                     name = stage.split(".")[1]
                     split = name.split("@")
@@ -99,7 +103,7 @@ class Robot:
                     self.battleCount += 1
                     print time.strftime("%H:%M:%S", time.localtime()), (str(self.index) + "累计进行了" + str(self.battleCount) + "次战斗")
                     if self.limit is not None and self.battleCount >= self.limit:
-                        duplicateStage = self.switchMode()
+                        self.duplicateStage = self.switchMode()
 
                     rate = 100
                     while randint(0, 100) < rate:
@@ -114,7 +118,7 @@ class Robot:
                 else:
                     start = False
                 if "wait" in stage:
-                    time.sleep(randint(5000, 10000) / 1000.0)
+                    time.sleep(randint(15000, 20000) / 1000.0)
                 else:
                     time.sleep(randint(800, 1000) / 1000.0)
             else:
