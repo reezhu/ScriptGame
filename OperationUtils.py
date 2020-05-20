@@ -169,16 +169,17 @@ def clickPosition(hWnd, position, click=None):
     #     win32api.SendMessage(hWnd, win32con.WM_LBUTTONUP, win32con.MK_LBUTTON, long_position)
 
 
-
 def clickImage(win, path, threshold=0.9, imsrc=None):
     if imsrc is None:
         imsrc = getWindowCVimg(win)
-    edit = cv2.imread(path)
+    edit = cv2.imread(path.encode("gbk"))
     result = aircv.find_template(imsrc, edit, threshold=threshold)
     if result:
+        print "click", path
         # saveImage(imsrc, [result['rectangle']])
         position = MathUtils.randomPosition(result['rectangle'])
-        x, y = position
+        clickPosition(win, position)
+        # x, y = position
         # sendClick(win, position, win32con.WM_LBUTTONDOWN)
         # time.sleep(0.01)
         # sendClick(win, position, win32con.WM_LBUTTONUP, button=0)
@@ -188,9 +189,9 @@ def clickImage(win, path, threshold=0.9, imsrc=None):
         # win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, x, y, 0, 0)
         # time.sleep(0.05)
         # win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, x, y, 0, 0)
-        SendInput(Mouse(win32con.MOUSEEVENTF_ABSOLUTE | win32con.MOUSEEVENTF_LEFTDOWN, x, y))
-        time.sleep(0.01)
-        SendInput(Mouse(win32con.MOUSEEVENTF_ABSOLUTE | win32con.MOUSEEVENTF_LEFTUP, x, y))
+        # SendInput(Mouse(win32con.MOUSEEVENTF_ABSOLUTE | win32con.MOUSEEVENTF_LEFTDOWN, x, y))
+        # time.sleep(0.01)
+        # SendInput(Mouse(win32con.MOUSEEVENTF_ABSOLUTE | win32con.MOUSEEVENTF_LEFTUP, x, y))
 
 
 def hasImage(win, path, threshold=0.9, imsrc=None):
@@ -307,7 +308,7 @@ def locatStage(RESOURCES, hWnd=None, imsrc=None, threshold=0.9):
     # draw_rec(imsrc, [((0,0), (0,0), (0,0), (0,0))])
     for image in RESOURCES:
 
-        result = aircv.find_template(imsrc, cv2.imread(image.encode("gbk")), threshold=(0.99 if ("++" in image) else threshold))
+        result = aircv.find_template(imsrc, cv2.imread(image.encode("gbk")), threshold=(0.98 if ("++" in image) else 0.8 if ("--" in image) else threshold))
         if result:
             # draw_rec(imsrc, [result['rectangle']])
             return True, image, result

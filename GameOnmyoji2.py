@@ -76,6 +76,7 @@ class Robot:
         self.duplicateStage = 0
         while True:
             imsrc = OperationUtils.getWindowCVimg(self.win)
+            # OperationUtils.saveImage(imsrc, [])
             result, stage, detail = OperationUtils.locatStage(self.RESOURCES, hWnd=self.win, imsrc=imsrc, threshold=THREADHOLD)
             if result:
                 print time.strftime("%H:%M:%S", time.localtime()), self.index, stage
@@ -98,6 +99,22 @@ class Robot:
                     time.sleep(randint(2000, 2500) / 1000.0)
                     continue
                 Position = MathUtils.randomPosition(detail["rectangle"], offset=31)
+                if "[" in stage and "]" in stage:
+                    name = stage.split("]")[0]
+                    split = name.split("[")[1]
+                    offsetx, offsety = split.split(",")
+                    x, y = Position
+                    Position = (x + int(offsetx), y + int(offsety))
+                    # OperationUtils.draw_rec(OperationUtils.getWindowCVimg(self.win), [((x - int(offsetx), y - int(offsety)), (x, y), (x, y), (x, y))], line_width=5, color=(0, 255, 0))
+                    # OperationUtils.draw_rec(OperationUtils.getWindowCVimg(self.win), [((x + 100, y), (x, y), (x, y), (x, y))], line_width=5, color=(0, 255, 0))
+                    # OperationUtils.draw_rec(OperationUtils.getWindowCVimg(self.win), [((x, y + 250), (x, y), (x, y), (x, y))], line_width=5, color=(0, 255, 0))
+                if "{" in stage and "}" in stage:
+                    # 跳转功能
+                    name = stage.split("}")[0]
+                    split = name.split("{")[1]
+                    index = str(stage.encode("utf8")).rfind("/")
+                    OperationUtils.clickImage(self.win, str(stage.encode("utf8"))[0:index + 1] + split, threshold=THREADHOLD - 0.1)
+                    # OperationUtils.draw_rec(OperationUtils.getWindowCVimg(self.win), [(Position, Position, Position, Position)], line_width=10, color=(255, 0, 0))
                 OperationUtils.clickPosition(self.win, Position)
                 if "end" in stage:
                     self.battleCount += 1
