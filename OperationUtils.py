@@ -240,7 +240,15 @@ def getAllWindows(labels):
                 return True
 
     hwnds = []
+
+    def getY(win):
+        x1, y1, x2, y2 = win32gui.GetWindowRect(win)
+        return y1
+
     win32gui.EnumWindows(callback, hwnds)
+
+    hwnds.sort(key=getY)
+
     return hwnds
 
 

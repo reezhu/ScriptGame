@@ -139,12 +139,22 @@ class Robot:
                 else:
                     time.sleep(randint(800, 1000) / 1000.0)
             else:
-                # print(str(win) + "无匹配(战斗中)，等待……")
+                # print(str(self.index) + "无匹配(战斗中)，等待……")
                 if start:
                     time.sleep(randint(3, 5))
                     start = False
                 else:
                     time.sleep(randint(500, 800) / 1000.0)
+
+
+def startRobot(index):
+    try:
+        instance = Robot(win, index)
+        instance.scanModes()
+        thread.start_new_thread(instance.run, ())
+        index += 1
+    except Exception:
+        traceback.print_exc(file=open('error.log', 'a+'))
 
 
 if __name__ == '__main__':
@@ -159,13 +169,7 @@ if __name__ == '__main__':
     index = 0
     OperationUtils.setLowPriority()
     for win in wins:
-        try:
-            instance = Robot(win, index)
-            instance.scanModes()
-            thread.start_new_thread(instance.run, ())
-            index += 1
-        except Exception:
-            traceback.print_exc(file=open('error.log', 'a+'))
-            raise Exception
+        startRobot(index)
+
     if (True):
         time.sleep(3600 * 9)
