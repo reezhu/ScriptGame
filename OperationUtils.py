@@ -172,12 +172,12 @@ def clickPosition(hWnd, position, click=None):
 def clickImage(win, path, threshold=0.9, imsrc=None):
     if imsrc is None:
         imsrc = getWindowCVimg(win)
-    edit = cv2.imread(path.encode("gbk"))
+    edit = getImage(path.encode("gbk"))
     result = aircv.find_template(imsrc, edit, threshold=threshold)
     if result:
         print "click", path
-        # saveImage(imsrc, [result['rectangle']])
-        position = MathUtils.randomPosition(result['rectangle'])
+        position = MathUtils.randomPosition(result['rectangle'], offset=31)
+        saveImage(imsrc, [(position, position, position, position)])
         clickPosition(win, position)
         # x, y = position
         # sendClick(win, position, win32con.WM_LBUTTONDOWN)
@@ -198,7 +198,7 @@ def hasImage(win, path, threshold=0.9, imsrc=None):
     if imsrc is None:
         imsrc = getWindowCVimg(win)
     if isinstance(path, str):
-        edit = cv2.imread(path)
+        edit = getImage(path)
     else:
         edit = path
     result = aircv.find_template(imsrc, edit, threshold=threshold)
@@ -305,6 +305,22 @@ def resizeWin(win, x, y):
     win32gui.SetWindowPos(win, win32con.HWND_BOTTOM, x1, y1, x, y, win32con.SWP_NOZORDER)
 
 
+cache = {}
+useCache = False
+
+
+def getImage(path):
+    if not useCache:
+        return cv2.imread(path)
+    if path in cache:
+        return cache[path]
+    else:
+        # print "cache", path
+        image = cv2.imread(path)
+        cache[path] = image
+        return image
+
+
 def locatStage(RESOURCES, hWnd=None, imsrc=None, threshold=0.9):
     if imsrc is not None:
         pass
@@ -316,7 +332,7 @@ def locatStage(RESOURCES, hWnd=None, imsrc=None, threshold=0.9):
     # draw_rec(imsrc, [((0,0), (0,0), (0,0), (0,0))])
     for image in RESOURCES:
 
-        result = aircv.find_template(imsrc, cv2.imread(image.encode("gbk")), threshold=(0.98 if ("++" in image) else 0.8 if ("--" in image) else threshold))
+        result = aircv.find_template(imsrc, getImage(image.encode("gbk")), threshold=(0.98 if ("++" in image) else 0.8 if ("--" in image) else threshold))
         if result:
             # draw_rec(imsrc, [result['rectangle']])
             return True, image, result

@@ -14,7 +14,7 @@ from random import randint
 
 class Robot:
     def __init__(self, win, index):
-        self.index = index
+        self.index = "{" + str(index) + "}"
         self.win = win
         self.RESOURCES = []
         self.battleCount = 0
@@ -53,7 +53,7 @@ class Robot:
                 self.limit = int(f.split('.')[1])
             elif "duplicate" in f:
                 self.duplicate = int(f.split('.')[1])
-            elif ".d" not in f:
+            elif not f.endswith(".d"):
                 self.RESOURCES.append(('./mode/' + folder + "/" + f).decode("gbk"))
         self.RESOURCES.sort()
         self.battleCount = 0
@@ -89,6 +89,7 @@ class Robot:
                         print time.strftime("%H:%M:%S", time.localtime()), "重复点击", self.index, self.duplicateStage
                     if self.duplicateStage > self.duplicate:
                         self.duplicateStage = self.switchMode()
+                # OperationUtils.draw_rec(OperationUtils.getWindowCVimg(self.win), [detail["rectangle"]], line_width=10, color=(255, 0, 0))
                 if "@" in stage:
                     name = stage.split(".")[1]
                     split = name.split("@")
@@ -115,7 +116,11 @@ class Robot:
                     index = str(stage.encode("utf8")).rfind("/")
                     OperationUtils.clickImage(self.win, str(stage.encode("utf8"))[0:index + 1] + split, threshold=THREADHOLD - 0.1)
                     # OperationUtils.draw_rec(OperationUtils.getWindowCVimg(self.win), [(Position, Position, Position, Position)], line_width=10, color=(255, 0, 0))
-                OperationUtils.clickPosition(self.win, Position)
+                    time.sleep(randint(1000, 2000) / 1000.0)
+                    if "}}" in stage:
+                        Position = None
+                if Position is not None:
+                    OperationUtils.clickPosition(self.win, Position)
                 if "end" in stage:
                     self.battleCount += 1
                     print time.strftime("%H:%M:%S", time.localtime()), (str(self.index) + "累计进行了" + str(self.battleCount) + "次战斗")
@@ -135,7 +140,7 @@ class Robot:
                 else:
                     start = False
                 if "wait" in stage:
-                    time.sleep(randint(15000, 20000) / 1000.0)
+                    time.sleep(randint(5000, 10000) / 1000.0)
                 else:
                     time.sleep(randint(800, 1000) / 1000.0)
             else:
@@ -152,7 +157,7 @@ def startRobot(index):
         instance = Robot(win, index)
         instance.scanModes()
         thread.start_new_thread(instance.run, ())
-        index += 1
+        return thread
     except Exception:
         traceback.print_exc(file=open('error.log', 'a+'))
 
@@ -168,8 +173,11 @@ if __name__ == '__main__':
     # scanModes()
     index = 0
     OperationUtils.setLowPriority()
+    threads = []
     for win in wins:
-        startRobot(index)
+        threads.append(startRobot(index))
+
+        index += 1
 
     if (True):
         time.sleep(3600 * 9)
