@@ -16,6 +16,7 @@ class Robot:
     def __init__(self, win, index):
         self.index = "{" + str(index) + "}"
         self.win = win
+        self.folder = None
         self.RESOURCES = []
         self.battleCount = 0
         self.exit = None
@@ -39,8 +40,8 @@ class Robot:
         i = raw_input("为{0}选择一个方案：(默认0)\n".format(index))
         if i.isdigit() and int(i) < len(self.modes):
             default = int(i)
-        folder = self.modes[default]
-        self.scanResources(folder)
+        self.folder = self.modes[default]
+        self.scanResources(self.folder)
 
     def scanResources(self, folder):
         self.exit = None
@@ -77,13 +78,17 @@ class Robot:
         while True:
             imsrc = OperationUtils.getWindowCVimg(self.win)
             # OperationUtils.saveImage(imsrc, [])
-            result, stage, detail = OperationUtils.locatStage(self.RESOURCES, hWnd=self.win, imsrc=imsrc, threshold=THREADHOLD)
+            try:
+                result, stage, detail = OperationUtils.locatStage(self.RESOURCES, hWnd=self.win, imsrc=imsrc, threshold=THREADHOLD)
+            except:
+                self.scanResources(self.folder)
+                continue
             if result:
                 print time.strftime("%H:%M:%S", time.localtime()), self.index, stage
                 if lastStage is not stage:
                     lastStage = stage
                     self.duplicateStage = 0
-                else:
+                elif "ignore" not in stage:
                     self.duplicateStage += 1
                     if self.duplicateStage % 10 == 0:
                         print time.strftime("%H:%M:%S", time.localtime()), "重复点击", self.index, self.duplicateStage
@@ -101,12 +106,13 @@ class Robot:
                     continue
                 Position = MathUtils.randomPosition(detail["rectangle"], offset=31)
                 if "[" in stage and "]" in stage:
+
                     name = stage.split("]")[0]
                     split = name.split("[")[1]
                     offsetx, offsety = split.split(",")
                     x, y = Position
                     Position = (x + int(offsetx), y + int(offsety))
-                    # OperationUtils.draw_rec(OperationUtils.getWindowCVimg(self.win), [((x - int(offsetx), y - int(offsety)), (x, y), (x, y), (x, y))], line_width=5, color=(0, 255, 0))
+                    # OperationUtils.draw_rec(OperationUtils.getWindowCVimg(self.win), [((x + int(offsetx), y + int(offsety)), (x, y), (x, y), (x, y))], line_width=5, color=(0, 255, 0))
                     # OperationUtils.draw_rec(OperationUtils.getWindowCVimg(self.win), [((x + 100, y), (x, y), (x, y), (x, y))], line_width=5, color=(0, 255, 0))
                     # OperationUtils.draw_rec(OperationUtils.getWindowCVimg(self.win), [((x, y + 250), (x, y), (x, y), (x, y))], line_width=5, color=(0, 255, 0))
                 if "{" in stage and "}" in stage:
@@ -123,7 +129,7 @@ class Robot:
                     OperationUtils.clickPosition(self.win, Position)
                 if "end" in stage:
                     self.battleCount += 1
-                    print time.strftime("%H:%M:%S", time.localtime()), (str(self.index) + "累计进行了" + str(self.battleCount) + "次战斗")
+                    print time.strftime("%H:%M:%S", time.localtime()), str(self.index) + "累计进行了" + str(self.battleCount) + "次战斗"
                     if self.limit is not None and self.battleCount >= self.limit:
                         self.duplicateStage = self.switchMode()
 
@@ -140,7 +146,7 @@ class Robot:
                 else:
                     start = False
                 if "wait" in stage:
-                    time.sleep(randint(5000, 10000) / 1000.0)
+                    time.sleep(randint(2000, 3000) / 100.0)
                 else:
                     time.sleep(randint(800, 1000) / 1000.0)
             else:

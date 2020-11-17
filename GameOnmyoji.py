@@ -58,7 +58,11 @@ def run(win, index):
     duplicateStage = 0
     while True:
         imsrc = OperationUtils.getWindowCVimg(win)
-        result, stage, detail = OperationUtils.locatStage(RESOURCES, hWnd=win, imsrc=imsrc, threshold=THREADHOLD)
+        try:
+            result, stage, detail = OperationUtils.locatStage(RESOURCES, hWnd=win, imsrc=imsrc, threshold=THREADHOLD)
+        except:
+
+            continue
         if result:
             print time.strftime("%H:%M:%S", time.localtime()), index, stage
             if lastStage is not stage:

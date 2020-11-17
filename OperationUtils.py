@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 # @Author  : Ree
 # @Email   : zhuweiyuan@corp.netease.com
 import ctypes
@@ -123,7 +123,13 @@ def getWindowCVimg(win):
     # 创建位图对象准备保存图片
     saveBitMap = win32ui.CreateBitmap()
     # 为bitmap开辟存储空间
-    saveBitMap.CreateCompatibleBitmap(mfcDC, width, height)
+    res = True
+    while res:
+        try:
+            saveBitMap.CreateCompatibleBitmap(mfcDC, width, height)
+            res = False
+        except:
+            time.sleep(1)
     # 将截图保存到saveBitMap中
     saveDC.SelectObject(saveBitMap)
 
