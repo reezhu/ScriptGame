@@ -106,7 +106,6 @@ class Robot:
                     continue
                 Position = MathUtils.randomPosition(detail["rectangle"], offset=31)
                 if "[" in stage and "]" in stage:
-
                     name = stage.split("]")[0]
                     split = name.split("[")[1]
                     offsetx, offsety = split.split(",")

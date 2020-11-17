@@ -22,6 +22,7 @@ ULONG_PTR = ctypes.POINTER(DWORD)
 WORD = ctypes.c_ushort
 
 
+
 class MOUSEINPUT(ctypes.Structure):
     _fields_ = (('dx', LONG),
                 ('dy', LONG),
@@ -268,7 +269,7 @@ def saveImage(imsrc, poses, color=(0, 255, 0), line_width=3):
         pos1 = (int(pos1[0]), int(pos1[1]))
         pos4 = (int(pos4[0]), int(pos4[1]))
         cv2.rectangle(imsrc, pos1, pos4, color, line_width)
-    cv2.imwrite("dream/example.png", imsrc)
+    cv2.imwrite("snapshot.png", imsrc)
 
 
 def draw_rec(img, poses, color=(0, 255, 0), line_width=3):
