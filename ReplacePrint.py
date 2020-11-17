@@ -3,7 +3,6 @@
 import sys
 
 SystemEncoding = sys.stdout.encoding
-print "system encoding:", SystemEncoding
 
 
 class CompatibleLogger:

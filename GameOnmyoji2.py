@@ -10,6 +10,7 @@ import OperationUtils
 THREADHOLD = 0.92
 switchCoolDown = 0
 from random import randint
+from ReplacePrint import SystemEncoding
 
 
 class Robot:
@@ -168,6 +169,7 @@ def startRobot(index):
 
 
 if __name__ == '__main__':
+    print "system encoding:", SystemEncoding
     open('file.txt', 'w').close()
     # try:
     label = '阴阳师-网易游戏'.decode("utf8").encode("gbk")
