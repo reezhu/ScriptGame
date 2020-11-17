@@ -65,7 +65,7 @@ class Robot:
             self.scanResources(self.exit)
             duplicateStage = 0
         else:
-            raise Exception("重复点击！")
+            raise Exception("Duplicate Click！")
             pass
         return duplicateStage
 
