@@ -22,7 +22,6 @@ ULONG_PTR = ctypes.POINTER(DWORD)
 WORD = ctypes.c_ushort
 
 
-
 class MOUSEINPUT(ctypes.Structure):
     _fields_ = (('dx', LONG),
                 ('dy', LONG),
@@ -338,7 +337,7 @@ def locatStage(RESOURCES, hWnd=None, imsrc=None, threshold=0.9):
             raise RuntimeError("window id is None")
     # draw_rec(imsrc, [((0,0), (0,0), (0,0), (0,0))])
     for image in RESOURCES:
-
+        image = u"./mode/%s/%s" % image
         result = aircv.find_template(imsrc, getImage(image.encode("gbk")), threshold=(0.98 if ("++" in image) else 0.8 if ("--" in image) else threshold))
         if result:
             # draw_rec(imsrc, [result['rectangle']])

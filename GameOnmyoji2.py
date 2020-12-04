@@ -48,6 +48,16 @@ class Robot:
         self.exit = None
         self.RESOURCES = []
         print "已选择方案：", folder
+        self._scanFolder(folder)
+
+        def getkey(value):
+            return value[1]
+
+        self.RESOURCES.sort(key=getkey)
+        self.battleCount = 0
+        return self.RESOURCES, self.exit
+
+    def _scanFolder(self, folder):
         for f in os.listdir('./mode/' + folder):
             if "exit" in f:
                 self.exit = f.split('.')[1]
@@ -55,11 +65,10 @@ class Robot:
                 self.limit = int(f.split('.')[1])
             elif "duplicate" in f:
                 self.duplicate = int(f.split('.')[1])
+            elif "include" in f:
+                self._scanFolder(str(f.split('.')[1]))
             elif not f.endswith(".d"):
-                self.RESOURCES.append(('./mode/' + folder + "/" + f).decode("gbk"))
-        self.RESOURCES.sort()
-        self.battleCount = 0
-        return self.RESOURCES, self.exit
+                self.RESOURCES.append((folder, f.decode("gbk")))
 
     def switchMode(self):
         if self.exit is not None and self.exit in self.modes:
@@ -85,16 +94,17 @@ class Robot:
                 self.scanResources(self.folder)
                 continue
             if result:
-                print time.strftime("%H:%M:%S", time.localtime()), self.index, stage
-                if lastStage is not stage:
+
+                if lastStage != stage:
                     lastStage = stage
                     self.duplicateStage = 0
+
                 elif "ignore" not in stage:
                     self.duplicateStage += 1
-                    if self.duplicateStage % 10 == 0:
-                        print time.strftime("%H:%M:%S", time.localtime()), "重复点击", self.index, self.duplicateStage
+                    print time.strftime("%H:%M:%S", time.localtime()), self.index, stage, "x", self.duplicateStage
                     if self.duplicateStage > self.duplicate:
                         self.duplicateStage = self.switchMode()
+
                 # OperationUtils.draw_rec(OperationUtils.getWindowCVimg(self.win), [detail["rectangle"]], line_width=10, color=(255, 0, 0))
                 if "@" in stage:
                     name = stage.split(".")[1]
@@ -120,6 +130,7 @@ class Robot:
                     name = stage.split("}")[0]
                     split = name.split("{")[1]
                     index = str(stage.encode("utf8")).rfind("/")
+                    print time.strftime("%H:%M:%S", time.localtime()), str(self.index), "from", stage
                     OperationUtils.clickImage(self.win, str(stage.encode("utf8"))[0:index + 1] + split, threshold=THREADHOLD - 0.1)
                     # OperationUtils.draw_rec(OperationUtils.getWindowCVimg(self.win), [(Position, Position, Position, Position)], line_width=10, color=(255, 0, 0))
                     time.sleep(randint(1000, 2000) / 1000.0)
@@ -152,7 +163,7 @@ class Robot:
             else:
                 # print(str(self.index) + "无匹配(战斗中)，等待……")
                 if start:
-                    time.sleep(randint(3, 5))
+                    time.sleep(5)
                     start = False
                 else:
                     time.sleep(randint(500, 800) / 1000.0)
